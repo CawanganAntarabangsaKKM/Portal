@@ -303,6 +303,38 @@
             </div>
     </section>
 
+
+    <div class="modal fade" id="modalStatusHantar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center p-4 border-0 shadow-lg" style="border-radius: 15px;">
+                <div class="modal-body">
+                    
+                    <div id="statusLoading">
+                        <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <h5 class="fw-bold mb-0" style="color: var(--primary-blue);">PERMOHONAN SEDANG DIHANTAR...</h5>
+                        <p class="text-muted small mt-2 mb-0">Sila tunggu sebentar</p>
+                    </div>
+
+                    <div id="statusBerjaya" style="display: none;">
+                        <i class="fas fa-check-circle text-success mb-3" style="font-size: 4rem;"></i>
+                        <h5 class="fw-bold mb-0 text-success">BORANG ANDA TELAH BERJAYA DIHANTAR!</h5>
+                        <p class="text-muted small mt-2 mb-0"></p>
+                    </div>
+
+                    <div id="statusGagal" style="display: none;">
+                        <i class="fas fa-times-circle text-danger mb-3" style="font-size: 4rem;"></i>
+                        <h5 class="fw-bold mb-0 text-danger">RALAT: PENGHANTARAN GAGAL</h5>
+                        <p class="text-muted small mt-2 mb-3">Sila semak semula tempahan anda atau cuba sebentar lagi.</p>
+                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="footer-placeholder"></div>
 
 
@@ -341,7 +373,7 @@
             });
 
 
-        // B. Fungsi Borang (Google Apps Script)
+        // B. Fungsi Borang (Google Apps Script) dengan Modal Lightbox
         document.getElementById("form").addEventListener("submit", function (e) {
             e.preventDefault();
 
@@ -358,10 +390,20 @@
                 formElements[i].style.cursor = "not-allowed";
             }
 
-            var messageBox = document.getElementById("message");
-            messageBox.textContent = "SEDANG DIHANTAR...";
-            messageBox.className = "alert alert-warning mt-4 text-center fw-bold";
-            messageBox.style.display = "block";
+            // --- CARA BARU: BUKA MODAL STATUS ---
+            // 1. Kenal pasti modal dan elemen di dalamnya
+            var statusModal = new bootstrap.Modal(document.getElementById('modalStatusHantar'));
+            var divLoading = document.getElementById('statusLoading');
+            var divBerjaya = document.getElementById('statusBerjaya');
+            var divGagal = document.getElementById('statusGagal');
+
+            // 2. Pastikan paparan loading ditunjukkan (dan yang lain disembunyikan)
+            divLoading.style.display = 'block';
+            divBerjaya.style.display = 'none';
+            divGagal.style.display = 'none';
+
+            // 3. Tunjukkan modal di skrin
+            statusModal.show();
 
             fetch("https://script.google.com/macros/s/AKfycbw5qTqySq4MGpcD78K2eH54q2YC9JXSR18ao6RI3nrbz7lf_UPnKM29teQqRztnASSg/exec", {
                 redirect: "follow",
@@ -374,16 +416,23 @@
                 else throw new Error("Gagal menghantar borang.");
             })
             .then(function (data) {
-                messageBox.textContent = "BORANG ANDA TELAH BERJAYA DIHANTAR!";
-                messageBox.className = "alert alert-success mt-4 text-center fw-bold";
+                // --- APABILA BERJAYA ---
+                // Sembunyikan loading, tunjukkan kotak berjaya (icon thumb up/check)
+                divLoading.style.display = 'none';
+                divBerjaya.style.display = 'block';
+                
+                // Refresh halaman selepas 2.5 saat
                 setTimeout(function () {
                     window.location.reload(); 
                 }, 2500);
             })
             .catch(function (error) {
                 console.error(error);
-                messageBox.textContent = "RALAT: SILA SEMAK SEMULA TEMPAHAN ANDA";
-                messageBox.className = "alert alert-danger mt-4 text-center fw-bold";
+                // --- APABILA GAGAL ---
+                divLoading.style.display = 'none';
+                divGagal.style.display = 'block';
+
+                // Buka kunci semula form jika gagal
                 for (var i = 0; i < formElements.length; i++) {
                     formElements[i].disabled = false;
                     formElements[i].style.cursor = ""; 
@@ -420,9 +469,3 @@
     
 </body>
 </html>
-
-
-
-
-
-
