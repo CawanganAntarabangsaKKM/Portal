@@ -53,7 +53,7 @@
 
         .table-responsive { overflow-x: auto; margin-bottom: 30px; border-radius: 10px; border: 1px solid #e2e8f0; }
         table { width: 100%; border-collapse: collapse; background-color: #fff; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; vertical-align: middle; }
         th { background-color: #f1f5f9; color: var(--text-dark); font-weight: 600; text-transform: uppercase; font-size: 12px; }
         tr:hover { background-color: #f8fafc; }
 
@@ -61,35 +61,89 @@
         .status-hadir { background-color: #d1fae5; color: #065f46; }
         .status-tidak { background-color: #fee2e2; color: #991b1b; }
         .status-belum { background-color: #f1f5f9; color: var(--text-muted); }
-        .status-saving { background-color: #fef08a; color: #854d0e; } /* Warna kuning untuk "Sedang Simpan" */
+        .status-saving { background-color: #fef08a; color: #854d0e; }
 
-        .radio-options { display: flex; gap: 10px; }
-        .radio-options label { cursor: pointer; }
-        .radio-options input[type="radio"] { display: none; }
-        
-        .btn-pilihan {
-            padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 20px; font-size: 13px;
-            font-weight: 500; color: var(--text-muted); background: #ffffff; transition: all 0.2s ease; display: inline-block;
+        /* --- REKAAN BUTANG SWITCH CANGGIH VERSI 2.0 --- */
+        .canggih-switch {
+            position: relative;
+            width: 140px; /* Lebarkan sikit untuk muat teks */
+            height: 36px;
+            background-color: #cbd5e1; /* Kelabu (Belum Respon) */
+            border-radius: 36px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease;
+            margin: 0 auto;
+            overflow: hidden;
         }
-        .btn-pilihan:hover { background: #f1f5f9; }
 
-        input[type="radio"]:checked + .btn-hadir { background-color: var(--primary-light); color: white; border-color: var(--primary-light); }
-        input[type="radio"]:checked + .btn-tidak { background-color: #ef4444; color: white; border-color: #ef4444; }
-        input[type="radio"]:disabled + .btn-pilihan { opacity: 0.5; cursor: not-allowed; }
+        .switch-handle {
+            position: absolute;
+            top: 3px;
+            left: calc(50% - 15px); /* Tengah */
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: left 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            z-index: 2;
+        }
+
+        /* Keadaan Butang Dipilih */
+        .canggih-switch.state-hadir { background-color: #10b981; } /* Hijau */
+        .canggih-switch.state-hadir .switch-handle { left: 3px; }
+
+        .canggih-switch.state-tidak { background-color: #ef4444; } /* Merah */
+        .canggih-switch.state-tidak .switch-handle { left: calc(100% - 33px); }
+
+        .canggih-switch.state-saving { opacity: 0.5; pointer-events: none; }
+
+        /* Teks Status Asal (Kelabu) */
+        .label-belum {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 12px; box-sizing: border-box;
+            font-size: 11px; font-weight: 700; color: #475569;
+            transition: opacity 0.2s; z-index: 1;
+        }
+
+        /* Teks bila Hijau/Merah */
+        .label-hadir, .label-tidak {
+            position: absolute; top: 0; line-height: 36px; font-size: 12px; font-weight: 700; color: white; opacity: 0; transition: opacity 0.2s; z-index: 1;
+        }
+        .label-hadir { right: 25px; } /* Bila bulat di kiri, teks HADIR muncul di ruang kanan yang kosong */
+        .label-tidak { left: 25px; } /* Bila bulat di kanan, teks TIDAK muncul di ruang kiri yang kosong */
+
+        /* Sorok & Tunjuk teks ikut status */
+        .canggih-switch.state-hadir .label-belum { opacity: 0; }
+        .canggih-switch.state-hadir .label-hadir { opacity: 1; }
+
+        .canggih-switch.state-tidak .label-belum { opacity: 0; }
+        .canggih-switch.state-tidak .label-tidak { opacity: 1; }
+
+        /* Ruang klik tersembunyi (Kiri & Kanan) */
+        .switch-click-areas {
+            display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 3;
+        }
+        .switch-click-areas label { flex: 1; cursor: pointer; }
+        .switch-click-areas input { display: none; }
+        /* ------------------------------------- */
 
         .dashboard {
             display: flex; justify-content: space-between; background: linear-gradient(135deg, #1e293b, #0f172a);
-            color: white; padding: 25px; border-radius: 12px; text-align: center;
+            color: white; padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 20px;
         }
         .stat-box { flex: 1; }
         .stat-box:not(:last-child) { border-right: 1px solid rgba(255,255,255,0.1); }
         .stat-box h3 { margin: 0; font-size: 32px; color: var(--accent); }
         .stat-box p { margin: 5px 0 0; font-size: 14px; font-weight: 300; opacity: 0.9; }
 
+        .summary-lists { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
+        .summary-lists h3 { font-size: 16px; margin-top: 0; margin-bottom: 10px; }
+        .summary-lists p { font-size: 14px; color: #475569; margin: 0 0 20px 0; line-height: 1.8; }
+
         @media (max-width: 768px) {
             .details-grid { grid-template-columns: 1fr; }
-            .radio-options { flex-direction: column; gap: 5px; }
-            .btn-pilihan { text-align: center; display: block; }
         }
     </style>
 </head>
@@ -128,16 +182,14 @@
                     <li>Roti Jala</li>
                     <li>Dessert (Belum diputuskan)</li>
                     <li>Buah anggur</li>
-                    <li>Teh tarik</li>
-                    <li>Air Detox</li>
-                    <li>Air Mineral</li>
+                    <li>Teh tarik, Air Detox, Air Mineral</li>
                 </ul>
             </div>
         </div>
 
         <h2>📋 Senarai Kehadiran</h2>
         <p style="color: var(--text-muted); font-size: 14px; margin-top: -5px; margin-bottom: 15px;">
-            Sila klik butang <strong>Hadir</strong> atau <strong>Tidak</strong> pada nama anda. Data akan dikemaskini secara langsung.
+            Sila tekan pada pilihan di bawah. Data akan dikemaskini secara langsung.
         </p>
         
         <div class="table-responsive">
@@ -145,9 +197,9 @@
                 <thead>
                     <tr>
                         <th width="5%">Bil.</th>
-                        <th width="40%">Nama Pekerja</th>
+                        <th width="45%">Nama Pekerja</th>
                         <th width="20%">Status</th>
-                        <th width="35%">Tindakan Anda</th>
+                        <th width="30%" style="text-align: center;">Tindakan Anda</th>
                     </tr>
                 </thead>
                 <tbody id="isiJadual">
@@ -171,11 +223,19 @@
                 <p>Belum Respon</p>
             </div>
         </div>
+
+        <div class="summary-lists">
+            <h3 style="color: #065f46;">✅ Senarai Hadir:</h3>
+            <p id="senaraiHadirTeks"><em>Menunggu data...</em></p>
+            
+            <h3 style="color: #991b1b; margin-bottom: 10px;">❌ Senarai Tidak Hadir:</h3>
+            <p id="senaraiTidakHadirTeks" style="margin-bottom: 0;"><em>Menunggu data...</em></p>
+        </div>
+
     </div>
 </div>
 
 <script>
-    // URL Web App Google Apps Script anda
     const scriptURL = 'https://script.google.com/macros/s/AKfycbytIMtwawjdfanOnqAXF5e811qTIF2P8YrfLDjnekkpoaUY6vPA_D8sVbIEsXxwm06H/exec';
     
     const senaraiNama = [
@@ -192,9 +252,8 @@
     ];
 
     let rekodKehadiran = {};
-    let statusMenyimpan = {}; // Untuk simpan status butang tengah loading
+    let statusMenyimpan = {};
 
-    // Fungsi 1: Ambil data dari Google Sheets bila laman dibuka
     async function muatDataDariSistem() {
         try {
             const response = await fetch(scriptURL + "?action=read");
@@ -206,32 +265,39 @@
         }
     }
 
-    // Fungsi 2: Bina jadual dalam HTML
     function binaJadual() {
         const tbody = document.getElementById("isiJadual");
         tbody.innerHTML = ""; 
 
         let hadirCount = 0;
         let tidakCount = 0;
+        let senaraiNamaHadir = [];
+        let senaraiNamaTidak = [];
 
         senaraiNama.forEach((nama, index) => {
             let status = rekodKehadiran[nama];
-            let isSaving = statusMenyimpan[nama]; // Cek kalau data orang ni tengah dihantar ke server
+            let isSaving = statusMenyimpan[nama]; 
 
             let badgeClass = "status-belum";
             let teksStatus = "Belum Respon";
+            let switchClass = "state-belum"; 
 
             if (isSaving) {
                 badgeClass = "status-saving";
                 teksStatus = "Menyimpan ⏳";
+                switchClass += " state-saving";
             } else if (status === "hadir") {
                 badgeClass = "status-hadir";
                 teksStatus = "Hadir";
+                switchClass = "state-hadir"; 
                 hadirCount++;
+                senaraiNamaHadir.push(nama);
             } else if (status === "tidak") {
                 badgeClass = "status-tidak";
                 teksStatus = "Tidak Hadir";
+                switchClass = "state-tidak"; 
                 tidakCount++;
+                senaraiNamaTidak.push(nama);
             }
 
             let tr = document.createElement("tr");
@@ -240,21 +306,28 @@
                 <td><strong>${nama}</strong></td>
                 <td><span class="status-badge ${badgeClass}">${teksStatus}</span></td>
                 <td>
-                    <div class="radio-options">
-                        <label>
-                            <input type="radio" name="radio_${index}" value="hadir" 
-                            ${status === 'hadir' ? 'checked' : ''} 
-                            ${isSaving ? 'disabled' : ''}
-                            onchange="simpanPilihan('${nama}', 'hadir')">
-                            <span class="btn-pilihan btn-hadir">✓ Hadir</span>
-                        </label>
-                        <label>
-                            <input type="radio" name="radio_${index}" value="tidak" 
-                            ${status === 'tidak' ? 'checked' : ''} 
-                            ${isSaving ? 'disabled' : ''}
-                            onchange="simpanPilihan('${nama}', 'tidak')">
-                            <span class="btn-pilihan btn-tidak">✗ Tidak</span>
-                        </label>
+                    <div class="canggih-switch ${switchClass}">
+                        <div class="switch-handle"></div>
+                        <div class="label-belum">
+                            <span>HADIR</span>
+                            <span>TIDAK</span>
+                        </div>
+                        <div class="label-hadir">HADIR</div>
+                        <div class="label-tidak">TIDAK</div>
+                        <div class="switch-click-areas">
+                            <label title="Tekan untuk Hadir">
+                                <input type="radio" name="rad_${index}" value="hadir" 
+                                ${status === 'hadir' ? 'checked' : ''} 
+                                ${isSaving ? 'disabled' : ''}
+                                onchange="simpanPilihan('${nama}', 'hadir')">
+                            </label>
+                            <label title="Tekan untuk Tidak Hadir">
+                                <input type="radio" name="rad_${index}" value="tidak" 
+                                ${status === 'tidak' ? 'checked' : ''} 
+                                ${isSaving ? 'disabled' : ''}
+                                onchange="simpanPilihan('${nama}', 'tidak')">
+                            </label>
+                        </div>
                     </div>
                 </td>
             `;
@@ -264,32 +337,35 @@
         document.getElementById("totalHadir").textContent = hadirCount;
         document.getElementById("totalTidak").textContent = tidakCount;
         document.getElementById("totalBelum").textContent = senaraiNama.length - (hadirCount + tidakCount);
+
+        document.getElementById("senaraiHadirTeks").innerHTML = senaraiNamaHadir.length > 0 
+            ? senaraiNamaHadir.join(", ") 
+            : "<em>Belum ada yang mengesahkan kehadiran.</em>";
+            
+        document.getElementById("senaraiTidakHadirTeks").innerHTML = senaraiNamaTidak.length > 0 
+            ? senaraiNamaTidak.join(", ") 
+            : "<em>Belum ada yang tidak hadir.</em>";
     }
 
-    // Fungsi 3: Hantar pilihan ke Google Sheets bila butang ditick
     async function simpanPilihan(nama, nilai) {
-        // Tukar status UI serta-merta supaya nampak pantas
         rekodKehadiran[nama] = nilai;
         statusMenyimpan[nama] = true;
         binaJadual(); 
 
         try {
-            // Hantar ke Google Sheets
             const url = `${scriptURL}?action=write&nama=${encodeURIComponent(nama)}&status=${encodeURIComponent(nilai)}`;
             await fetch(url);
             
-            // Selesai hantar, padam status menyimpan
             statusMenyimpan[nama] = false;
             binaJadual();
         } catch (error) {
             console.error('Ralat menyimpan data:', error);
-            alert("Harap maaf, sistem gagal merekod kehadiran untuk " + nama + ". Sila periksa capaian internet anda dan cuba lagi.");
+            alert("Harap maaf, sistem gagal merekod kehadiran. Sila periksa capaian internet anda dan cuba lagi.");
             statusMenyimpan[nama] = false;
             binaJadual();
         }
     }
 
-    // Mula jalankan kod bila laman siap dimuat
     window.onload = function() {
         muatDataDariSistem();
     };
