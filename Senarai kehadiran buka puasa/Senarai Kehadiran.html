@@ -119,7 +119,7 @@
 <div class="container">
     <div class="header">
         <h1>Majlis Berbuka Puasa</h1>
-        <p>Cawangan Antarabangsa <br>Bahagian Dasar dan Hubungan Antarabangsa</p>
+        <p>Cawangan Antarabangsa, BDHA</p>
     </div>
     
     <div class="content">
@@ -205,7 +205,6 @@
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbytIMtwawjdfanOnqAXF5e811qTIF2P8YrfLDjnekkpoaUY6vPA_D8sVbIEsXxwm06H/exec';
     
-    // Nama Istaq Nadzril bin Abdul Kader telah dikeluarkan dari senarai di bawah
     const senaraiNama = [
         "Dr. Ainul Nadziha binti Mohd Hanafiah", "Norpuspaliza binti Mustapa",
         "Hanizam bin Darham", "Thailis Bounya Anak Ngelayang",
@@ -306,12 +305,13 @@
         document.getElementById("totalTidak").textContent = tidakCount;
         document.getElementById("totalBelum").textContent = senaraiNama.length - (hadirCount + tidakCount);
 
+        // KOD YANG DIUBAH: Tambah nombor dan turun ke baris baru menggunakan <br>
         document.getElementById("senaraiHadirTeks").innerHTML = senaraiNamaHadir.length > 0 
-            ? senaraiNamaHadir.join(", ") 
+            ? senaraiNamaHadir.map((nama, index) => `${index + 1}. ${nama}`).join("<br>") 
             : "<em>Belum ada yang mengesahkan kehadiran.</em>";
             
         document.getElementById("senaraiTidakHadirTeks").innerHTML = senaraiNamaTidak.length > 0 
-            ? senaraiNamaTidak.join(", ") 
+            ? senaraiNamaTidak.map((nama, index) => `${index + 1}. ${nama}`).join("<br>") 
             : "<em>Belum ada yang tidak hadir.</em>";
     }
 
@@ -341,4 +341,3 @@
 
 </body>
 </html>
-
