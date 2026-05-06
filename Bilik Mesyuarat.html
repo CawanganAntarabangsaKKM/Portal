@@ -411,14 +411,14 @@
             })
             .then(function (data) {
                 // --- APABILA BERJAYA ---
-                // Sembunyikan loading, tunjukkan kotak berjaya (icon thumb up/check)
+                // Sembunyikan loading, tunjukkan kotak berjaya (icon thumb up)
                 divLoading.style.display = 'none';
                 divBerjaya.style.display = 'block';
                 
-                // Refresh halaman selepas 1.5 saat
+                // Refresh halaman selepas 1 saat
                 setTimeout(function () {
                     window.location.reload(); 
-                }, 1500);
+                }, 1000);
             })
             .catch(function (error) {
                 console.error(error);
